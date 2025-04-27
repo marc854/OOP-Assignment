@@ -46,3 +46,47 @@ print()
 hero2.display_info()
 hero2.use_power()
 hero2.fly()
+
+# Base class
+class Vehicle:
+    def move(self):
+        raise NotImplementedError("Subclasses must implement this method.")
+
+# Subclass for Car
+class Car(Vehicle):
+    def move(self):
+        print("🚗 The car is driving on the road.")
+
+# Subclass for Boat
+class Boat(Vehicle):
+    def move(self):
+        print("🚤 The boat is sailing across the water.")
+
+# Subclass for Plane
+class Plane(Vehicle):
+    def move(self):
+        print("✈️ The plane is flying through the sky.")
+
+# Subclass for Bicycle
+class Bicycle(Vehicle):
+    def move(self):
+        print("🚴 The bicycle is pedaling along the path.")
+
+# Example usage
+def move_vehicle(vehicle):
+    vehicle.move()
+
+# Create instances
+car = Car()
+boat = Boat()
+plane = Plane()
+bicycle = Bicycle()
+
+# Move each vehicle
+move_vehicle(car)
+move_vehicle(boat)
+move_vehicle(plane)
+move_vehicle(bicycle)
+
+
+
