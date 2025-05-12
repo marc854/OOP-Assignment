@@ -1,0 +1,62 @@
+import pandas as pd
+df = pd.read_csv("path_to_file/owid-covid-data.csv")
+
+print(df.columns)
+print(df.head())
+
+print(df.isnull().sum())
+
+countries_of_interest = ['Kenya', 'USA', 'India']
+df_filtered = df[df['location'].isin(countries_of_interest)]
+
+df_filtered = df_filtered.dropna(subset=['date', 'location'])
+
+df_filtered['date'] = pd.to_datetime(df_filtered['date'])
+
+df_filtered['total_cases'].fillna(df_filtered['total_cases'].mean(), inplace=True)
+
+import matplotlib.pyplot as plt
+df_kenya = df_filtered[df_filtered['location'] == 'Kenya']
+plt.plot(df_kenya['date'], df_kenya['total_cases'], label="Total Cases")
+plt.plot(df_kenya['date'], df_kenya['total_deaths'], label="Total Deaths")
+plt.xlabel('Date')
+plt.ylabel('Count')
+plt.title('COVID-19 Trends in Kenya')
+plt.legend()
+plt.show()
+
+df_filtered['new_cases'] = df_filtered['total_cases'].diff()
+df_india = df_filtered[df_filtered['location'] == 'India']
+plt.plot(df_india['date'], df_india['new_cases'], label="New Cases India")
+df_usa = df_filtered[df_filtered['location'] == 'USA']
+plt.plot(df_usa['date'], df_usa['new_cases'], label="New Cases USA")
+plt.xlabel('Date')
+plt.ylabel('New Cases')
+plt.title('Daily New Cases in India vs USA')
+plt.legend()
+plt.show()
+
+df_filtered['death_rate'] = df_filtered['total_deaths'] / df_filtered['total_cases']
+
+plt.plot(df_kenya['date'], df_kenya['total_vaccinations'], label="Vaccinations Kenya")
+plt.xlabel('Date')
+plt.ylabel('Total Vaccinations')
+plt.title('Vaccination Progress in Kenya')
+plt.legend()
+plt.show()
+
+df_filtered['vaccination_rate'] = df_filtered['total_vaccinations'] / df_filtered['population']
+df_usa['vaccination_rate'].plot(label='Vaccination Rate USA')
+plt.xlabel('Date')
+plt.ylabel('Vaccination Rate')
+plt.title('Vaccination Progress in USA')
+plt.legend()
+plt.show()
+
+df_latest = df_filtered[df_filtered['date'] == df_filtered['date'].max()]
+df_choropleth = df_latest[['iso_code', 'total_cases']]
+
+import plotly.express as px
+fig = px.choropleth(df_choropleth, locations="iso_code", color="total_cases",
+                    hover_name="iso_code", color_continuous_scale="Viridis")
+fig.show()
